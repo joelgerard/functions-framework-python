@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [1.4.0] - 2020-05-06
-- Use gunicorn as a production HTTP server
+- Use gunicorn as a production HTTP server ([#36])
 
 ## [1.3.0] - 2020-04-13
 - Add support for running `python -m functions_framework` ([#31])
@@ -43,13 +43,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release
 
-[Unreleased]: https://github.com/GoogleCloudPlatform/functions-framework-python/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/functions-framework-python/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/GoogleCloudPlatform/functions-framework-python/releases/tag/v1.4.0
 [1.3.0]: https://github.com/GoogleCloudPlatform/functions-framework-python/releases/tag/v1.3.0
 [1.2.0]: https://github.com/GoogleCloudPlatform/functions-framework-python/releases/tag/v1.2.0
 [1.1.1]: https://github.com/GoogleCloudPlatform/functions-framework-python/releases/tag/v1.1.1
 [1.0.1]: https://github.com/GoogleCloudPlatform/functions-framework-python/releases/tag/v1.0.1
 [1.0.0]: https://github.com/GoogleCloudPlatform/functions-framework-python/releases/tag/v1.0.0
 
+[#36]: https://github.com/GoogleCloudPlatform/functions-framework-python/pull/36
 [#33]: https://github.com/GoogleCloudPlatform/functions-framework-python/pull/33
 [#31]: https://github.com/GoogleCloudPlatform/functions-framework-python/pull/31
 [#20]: https://github.com/GoogleCloudPlatform/functions-framework-python/pull/20
