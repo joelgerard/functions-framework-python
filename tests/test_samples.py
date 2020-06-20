@@ -34,7 +34,10 @@ class TestSamples:
 
     @pytest.mark.slow_integration_test
     def test_cloud_run_http(self, docker_client):
-
+        """
+        Tests the docker file runs and the function called.
+        :param docker_client: The docker process to run the Dockerfile.
+        """
         TAG = "cloud_run_http"
         docker_client.images.build(path=str(EXAMPLES_DIR / "cloud_run_http"), tag={TAG})
         docker_client.containers.run(
@@ -56,6 +59,12 @@ class TestSamples:
         assert response_text == "Hello world!"
 
     def get_doc_code(self, doc_file_path, doc_tag):
+        """
+        Returns the inline code from an MD file that has been marked with a specific tag.
+        :param doc_file_path: The path to the MD file.
+        :param doc_tag: The doc tag that labels the code to extract.
+        :return: The extracted inline code.
+        """
         with open(doc_file_path) as open_file:
             data = open_file.read()
         m = re.search(
@@ -64,6 +73,14 @@ class TestSamples:
         return m.group(1)
 
     def compare_doc_code_file(self, doc_file_path, doc_tag, example_file_path):
+        """
+        Compares whether the sample code that was committed is the same as the sample code
+        pasted into the MD file.
+        :param doc_file_path: The path to the MD file.
+        :param doc_tag: The doc tag that labels the code to extract.
+        :param example_file_path: The runnable example file.
+        :return: True if they are the same, False otherwise.
+        """
         doc_text = self.get_doc_code(doc_file_path, doc_tag)
         with open(example_file_path) as open_file:
             data = open_file.read()
@@ -71,6 +88,10 @@ class TestSamples:
 
     @pytest.mark.slow_integration_test
     def test_cloud_run_http_inline_samples(self, docker_client):
+        """
+        Tests whether the code in examples/cloud_run_http/README.md works.
+        :param docker_client: The docker process to run the Dockerfile.
+        """
         http_example_dir = EXAMPLES_DIR / "cloud_run_http"
         doc_file_path = str(http_example_dir / "README.md")
         docker_file_path = http_example_dir / "Dockerfile"
