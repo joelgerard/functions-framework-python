@@ -37,21 +37,23 @@ class TestSamples:
 
         TAG = "cloud_run_http"
         docker_client.images.build(path=str(EXAMPLES_DIR / "cloud_run_http"), tag={TAG})
-        docker_client.containers.run(image=TAG, detach=True, ports={8080: 8080})
+        docker_client.containers.run(
+            image=TAG, detach=True, ports={8080: 8080}, environment={"PORT": "8080"}
+        )
         timeout = 10
-        success = False
-        while success == False and timeout > 0:
+        response_text = None
+        while response_text is None and timeout > 0:
             try:
                 response = requests.get("http://localhost:8080")
-                if response.text == "Hello world!":
-                    success = True
+                if response.text != "":
+                    response_text = response.text
             except:
                 pass
 
             time.sleep(1)
             timeout -= 1
 
-        assert success
+        assert response_text == "Hello world!"
 
     def get_doc_code(self, doc_file_path, doc_tag):
         with open(doc_file_path) as open_file:
