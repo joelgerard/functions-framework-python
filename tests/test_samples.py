@@ -1,5 +1,8 @@
+import os
 import pathlib
+import subprocess
 import sys
+import re
 import time
 
 import docker
@@ -18,14 +21,23 @@ class TestSamples:
         for container in containers:
             container.stop()
 
+    def setup_method(self, method):
+        # Call this just in case a previous test has left something running.
+        self.stop_all_containers(docker.from_env())
+
+    def teardown_method(self, method):
+        self.stop_all_containers(docker.from_env())
+
+    @pytest.fixture
+    def docker_client(self):
+        return docker.from_env()
+
     @pytest.mark.slow_integration_test
-    def test_cloud_run_http(self):
-        client = docker.from_env()
-        self.stop_all_containers(client)
+    def test_cloud_run_http(self, docker_client):
 
         TAG = "cloud_run_http"
-        client.images.build(path=str(EXAMPLES_DIR / "cloud_run_http"), tag={TAG})
-        container = client.containers.run(image=TAG, detach=True, ports={8080: 8080})
+        docker_client.images.build(path=str(EXAMPLES_DIR / "cloud_run_http"), tag={TAG})
+        docker_client.containers.run(image=TAG, detach=True, ports={8080: 8080})
         timeout = 10
         success = False
         while success == False and timeout > 0:
@@ -39,6 +51,48 @@ class TestSamples:
             time.sleep(1)
             timeout -= 1
 
-        container.stop()
+        assert success
+
+    def get_doc_code(self, doc_file_path, doc_tag):
+        with open(doc_file_path) as open_file:
+            data = open_file.read()
+        m = re.search("start_doc:%s.*?```.*?\n(.*?)```" % doc_tag, data, re.MULTILINE|re.DOTALL)
+        return m.group(1)
+
+    def compare_doc_code_file(self, doc_file_path, doc_tag, example_file_path):
+        doc_text = self.get_doc_code(doc_file_path, doc_tag)
+        with open(example_file_path) as open_file:
+            data = open_file.read()
+        return doc_text == data
+
+    @pytest.mark.slow_integration_test
+    def test_cloud_run_http_inline_samples(self, docker_client):
+        http_example_dir = EXAMPLES_DIR / "cloud_run_http"
+        doc_file_path = str(http_example_dir / "README.md")
+        docker_file_path = http_example_dir / "Dockerfile"
+
+        # Make sure the code we use in the MD file is the same code
+        # that actually runs.
+        assert self.compare_doc_code_file(doc_file_path, "http_docker_file", docker_file_path), \
+            "Sample code in MD file doesn't match actual code"
+
+        # Make sure the code written down in the MD file actually runs and returns
+        # what we expect.
+        docker_run_code = self.get_doc_code(doc_file_path, "http_docker_run")
+        os.chdir(http_example_dir)
+        os.system(docker_run_code)
+        curl_code = self.get_doc_code(doc_file_path, "http_curl")
+        timeout = 10
+        success = False
+        while success == False and timeout > 0:
+            try:
+                result = subprocess.check_output(curl_code, shell=True)
+                if result == b"Hello world!":
+                    success = True
+            except:
+                pass
+
+            time.sleep(1)
+            timeout -= 1
 
         assert success

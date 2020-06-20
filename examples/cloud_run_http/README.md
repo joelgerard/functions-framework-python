@@ -15,6 +15,7 @@ This guide assumes your Python function is defined in a `main.py` file and depen
 
 To run your function in a container, create a `Dockerfile` with the following contents:
 
+<!-- start_doc:http_docker_file -->
 ```Dockerfile
 # Use the official Python image.
 # https://hub.docker.com/_/python
@@ -38,16 +39,20 @@ CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 -e FUNCTION_TARGET=hello
 
 Start the container locally by running `docker build` and `docker run`:
 
+<!-- start_doc:http_docker_run -->
 ```sh
-docker build -t helloworld . && docker run --rm -p 8080:8080 -e PORT=8080 helloworld
+docker build -t helloworld . && docker run -d --rm -p 8080:8080 -e PORT=8080 helloworld
 ```
 
 Send requests to this function using `curl` from another terminal window:
 
+<!-- start_doc:http_curl -->
 ```sh
 curl localhost:8080
-# Output: Hello world!
 ```
+
+Output: Hello world!
+
 
 ## Configure gcloud
 
