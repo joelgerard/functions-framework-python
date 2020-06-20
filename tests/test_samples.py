@@ -56,7 +56,9 @@ class TestSamples:
     def get_doc_code(self, doc_file_path, doc_tag):
         with open(doc_file_path) as open_file:
             data = open_file.read()
-        m = re.search("start_doc:%s.*?```.*?\n(.*?)```" % doc_tag, data, re.MULTILINE|re.DOTALL)
+        m = re.search(
+            "start_doc:%s.*?```.*?\n(.*?)```" % doc_tag, data, re.MULTILINE | re.DOTALL
+        )
         return m.group(1)
 
     def compare_doc_code_file(self, doc_file_path, doc_tag, example_file_path):
@@ -73,8 +75,9 @@ class TestSamples:
 
         # Make sure the code we use in the MD file is the same code
         # that actually runs.
-        assert self.compare_doc_code_file(doc_file_path, "http_docker_file", docker_file_path), \
-            "Sample code in MD file doesn't match actual code"
+        assert self.compare_doc_code_file(
+            doc_file_path, "http_docker_file", docker_file_path
+        ), "Sample code in MD file doesn't match actual code"
 
         # Make sure the code written down in the MD file actually runs and returns
         # what we expect.
